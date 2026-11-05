@@ -759,7 +759,10 @@ def _json_secret_value_spans(text: str) -> List[Tuple[int, int]]:
         return []
     values: List[Tuple[str, str]] = []
 
-    def walk(node: Any) -> None:
+    # Iterative walk: deeply nested hostile JSON must not exhaust the stack.
+    stack: List[Any] = [data]
+    while stack:
+        node = stack.pop()
         if isinstance(node, dict):
             if node.get("kind") == "Secret":
                 for section in ("data", "stringData"):
@@ -768,13 +771,9 @@ def _json_secret_value_spans(text: str) -> List[Tuple[int, int]]:
                         for k, v in block.items():
                             if isinstance(v, str) and v:
                                 values.append((str(k), v))
-            for v in node.values():
-                walk(v)
+            stack.extend(node.values())
         elif isinstance(node, list):
-            for v in node:
-                walk(v)
-
-    walk(data)
+            stack.extend(node)
     spans: List[Tuple[int, int]] = []
     for key, value in values:
         for ascii_only in (False, True):  # the file may use \uXXXX escapes

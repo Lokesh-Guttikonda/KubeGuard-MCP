@@ -387,19 +387,29 @@ def _parse_any(text: Union[str, bytes, Any]) -> Any:
         return docs[0] if len(docs) == 1 else docs
 
 
+_MAX_NESTING = 8
+
+
 def _items(obj: Any) -> List[Dict[str, Any]]:
-    if obj is None:
-        return []
-    if isinstance(obj, list):
-        out: List[Dict[str, Any]] = []
-        for x in obj:
-            out.extend(_items(x))
-        return out
-    if isinstance(obj, dict):
-        if isinstance(obj.get("items"), list) and (obj.get("kind", "").endswith("List") or "kind" not in obj):
-            return [i for i in obj["items"] if isinstance(i, dict)]
-        return [obj]
-    return []
+    """Flatten lists and ``*List`` objects into the Kubernetes objects they hold.
+
+    Iterative with a depth cap: hostile input (``[[[[...]]]]`` nested 100k deep)
+    must never exhaust the Python stack, even on interpreters whose ``json``
+    module happily parses it.
+    """
+    out: List[Dict[str, Any]] = []
+    stack: List[Tuple[Any, int]] = [(obj, 0)]
+    while stack:
+        node, depth = stack.pop()
+        if isinstance(node, dict):
+            items = node.get("items")
+            if isinstance(items, list) and (str(node.get("kind", "")).endswith("List") or "kind" not in node):
+                out.extend(i for i in items if isinstance(i, dict))
+            else:
+                out.append(node)
+        elif isinstance(node, list) and depth < _MAX_NESTING:
+            stack.extend((x, depth + 1) for x in reversed(node))
+    return out
 
 
 _EVENT_TABLE_RE = re.compile(
@@ -505,13 +515,13 @@ class IncidentBundle:
         b = cls(name=name)
         if pod is not None:
             b._ingest_obj("pod.json", _parse_any(pod), as_kind="pod")
-            b.raw_files["pod.json"] = pod if isinstance(pod, str) else json.dumps(pod, indent=2)
+            b._keep_raw("pod.json", pod)
         if events is not None:
             if isinstance(events, str) and events.strip() and events.strip()[0] not in "[{" and "Warning" in events:
                 b.events.extend(_parse_event_table(events))
             else:
                 b.events.extend(_items(_parse_any(events)))
-            b.raw_files["events.json"] = events if isinstance(events, str) else json.dumps(events, indent=2)
+            b._keep_raw("events.json", events)
         if logs:
             b.logs = logs
             b.raw_files["logs.txt"] = logs
@@ -542,10 +552,20 @@ class IncidentBundle:
         ):
             if value is not None:
                 getattr(b, attr).extend(_items(_parse_any(value)))
-                b.raw_files[f"{attr}.json"] = value if isinstance(value, str) else json.dumps(value, indent=2)
+                b._keep_raw(f"{attr}.json", value)
         return b
 
     # -- ingestion --------------------------------------------------------- #
+    def _keep_raw(self, fname: str, value: Any) -> None:
+        """Remember an input's text for the redaction audit (never raises)."""
+        if isinstance(value, str):
+            self.raw_files[fname] = value
+            return
+        try:
+            self.raw_files[fname] = json.dumps(value, indent=2, default=str)
+        except (RecursionError, ValueError, TypeError):
+            pass  # hostile / unserialisable input: nothing to audit, nothing to leak
+
     def _ingest_structured(self, fname: str, text: str) -> None:
         low = fname.lower()
         try:

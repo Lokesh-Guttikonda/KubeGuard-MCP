@@ -7,6 +7,7 @@ from src import yaml_lite
 from src.correlator import (
     FailureType,
     IncidentBundle,
+    _items,
     correlate,
     format_memory,
     parse_quantity,
@@ -576,6 +577,36 @@ def test_event_messages_are_masked_on_ingress():
     crash = _diag(result, FailureType.CRASH_LOOP)
     assert any("[REDACTED:secret_assignment]" in e.detail for e in crash.evidence)
     assert "hunter2" not in json.dumps(result.to_dict())
+
+
+def _nested_list(depth):
+    root = cur = []
+    for _ in range(depth):
+        nxt = []
+        cur.append(nxt)
+        cur = nxt
+    return root
+
+
+def test_flattening_hostile_nesting_never_recurses():
+    # Regression: on Python 3.14/macOS json.loads accepts 100k-deep arrays, after
+    # which a recursive flattener blew the stack. Exercise it directly.
+    assert _items(_nested_list(5000)) == []
+    assert _items([[{"kind": "Pod"}]]) == [{"kind": "Pod"}]
+    assert _items({"kind": 5, "items": "x"}) == [{"kind": 5, "items": "x"}]
+    bundle = IncidentBundle.from_inputs(pod=pod(), docker_inspect=_nested_list(5000), events=_nested_list(5000))
+    assert bundle.docker_inspect == [] and bundle.events == []
+
+
+def test_redactor_secret_walk_handles_hostile_nesting():
+    from src.redactor import _json_secret_value_spans
+
+    depth = 5000
+    text = '{"x": ' * depth + '{"kind": "Secret", "data": {"k": "dmFsdWU="}}' + "}" * depth
+    spans = _json_secret_value_spans(text)  # must not raise, whatever json.loads does here
+    # Either this interpreter's json refuses the depth (nothing found) or the
+    # iterative walk reaches the Secret and locates its value exactly.
+    assert spans == [] or [text[a:b] for a, b in spans] == ["dmFsdWU="]
 
 
 def test_deeply_nested_json_file_is_ignored(tmp_path):
