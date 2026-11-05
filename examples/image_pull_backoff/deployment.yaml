@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ingest-worker
+  namespace: data
+  annotations:
+    kubernetes.io/change-cause: "images moved from ghcr.io/acme to registry.acme.internal:5000"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ingest-worker
+  template:
+    metadata:
+      labels:
+        app: ingest-worker
+    spec:
+      serviceAccountName: ingest-worker
+      containers:
+        - name: worker
+          image: registry.acme.internal:5000/data/ingest-worker:2.8.0
+          args: ["--queue", "events-raw", "--concurrency", "8"]
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              memory: 1Gi

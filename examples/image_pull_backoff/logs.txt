@@ -1,0 +1,1 @@
+Error from server (BadRequest): container "worker" in pod "ingest-worker-5f7c9d8b6-m4n2x" is waiting to start: trying and failing to pull image

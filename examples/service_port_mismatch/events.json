@@ -1,0 +1,42 @@
+{
+  "apiVersion": "v1",
+  "kind": "EventList",
+  "items": [
+    {
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned web/checkout-frontend-58f6d7c9b4-hn7wz to aks-web-31415926-vmss000002",
+      "involvedObject": {"kind": "Pod", "namespace": "web", "name": "checkout-frontend-58f6d7c9b4-hn7wz"},
+      "count": 1,
+      "firstTimestamp": "2026-11-04T16:19:52Z",
+      "lastTimestamp": "2026-11-04T16:19:52Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Successfully pulled image \"acmeshop.azurecr.io/checkout-frontend:4.12.0\" in 6.912s (6.912s including waiting). Image size: 148317204 bytes.",
+      "involvedObject": {"kind": "Pod", "namespace": "web", "name": "checkout-frontend-58f6d7c9b4-hn7wz", "fieldPath": "spec.containers{web}"},
+      "count": 1,
+      "firstTimestamp": "2026-11-04T16:19:59Z",
+      "lastTimestamp": "2026-11-04T16:19:59Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container web",
+      "involvedObject": {"kind": "Pod", "namespace": "web", "name": "checkout-frontend-58f6d7c9b4-hn7wz", "fieldPath": "spec.containers{web}"},
+      "count": 1,
+      "firstTimestamp": "2026-11-04T16:20:00Z",
+      "lastTimestamp": "2026-11-04T16:20:00Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "ScalingReplicaSet",
+      "message": "Scaled up replica set checkout-frontend-58f6d7c9b4 to 3 from 0",
+      "involvedObject": {"kind": "Deployment", "namespace": "web", "name": "checkout-frontend"},
+      "count": 1,
+      "firstTimestamp": "2026-11-04T16:19:51Z",
+      "lastTimestamp": "2026-11-04T16:19:51Z"
+    }
+  ]
+}

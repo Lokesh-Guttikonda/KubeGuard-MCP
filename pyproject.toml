@@ -1,0 +1,121 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kubeguard-mcp"
+version = "1.0.0"
+description = "Zero-Trust Kubernetes & Container Triage MCP Server + CLI: secret firewall, policy engine and deterministic incident correlator with exact YAML/Dockerfile patches. Offline, zero dependencies."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Lokesh Guttikonda" }]
+keywords = [
+    "kubernetes", "k8s", "docker", "mcp", "model-context-protocol", "sre", "incident-response",
+    "devsecops", "secret-scanning", "redaction", "zero-trust", "kubectl", "triage", "claude", "cursor",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Security",
+    "Topic :: System :: Clustering",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Systems Administration",
+    "Typing :: Typed",
+]
+# The core engine is stdlib-only. Nothing is installed by default.
+dependencies = []
+
+[project.optional-dependencies]
+llm = ["httpx>=0.27"]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.6"]
+
+[project.scripts]
+kubeguard = "kubeguard.cli:main"
+kubeguard-mcp = "kubeguard.mcp_server:main"
+
+[project.urls]
+Homepage = "https://github.com/Lokesh-Guttikonda/KubeGuard-MCP"
+Repository = "https://github.com/Lokesh-Guttikonda/KubeGuard-MCP"
+Issues = "https://github.com/Lokesh-Guttikonda/KubeGuard-MCP/issues"
+
+# The source lives in src/ (as `src.*` in a checkout) and is installed as the
+# `kubeguard` package; the offline scenarios ship inside it as package data.
+[tool.setuptools]
+packages = ["kubeguard", "kubeguard.examples"]
+include-package-data = false
+
+[tool.setuptools.package-dir]
+kubeguard = "src"
+"kubeguard.examples" = "examples"
+
+[tool.setuptools.package-data]
+kubeguard = ["py.typed"]
+"kubeguard.examples" = ["*/*"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra --strict-markers"
+markers = ["slow: subprocess / end-to-end tests"]
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = ["pragma: no cover", "if __name__ == .__main__.:", "raise NotImplementedError"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+extend-exclude = ["examples"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "C4", "SIM", "RUF"]
+ignore = [
+    "E501",    # long lines are wrapped by the formatter where it matters
+    "S101",    # assert is fine (tests + internal invariants)
+    "S105",    # false positives on rule names containing "token"/"password"
+    "S106",
+    "S603",    # subprocess in tests is intentional
+    "S607",
+    "B008",
+    "SIM108",
+    "RUF001",  # we intentionally print Unicode glyphs (with ASCII fallbacks)
+    "RUF002",
+    "RUF003",
+    "RUF012",
+    "RUF005",  # tuple concatenation reads fine for YAML paths
+    "UP006",   # keep typing.List etc. for Python 3.9 compatibility
+    "UP007",
+    "UP035",
+    "UP045",
+    "C408",
+    "SIM102",
+    "SIM103",
+    "SIM105",
+    "SIM115",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S", "B011", "RUF"]
+"scripts/*" = ["E402"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src"]

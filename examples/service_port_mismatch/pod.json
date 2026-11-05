@@ -1,0 +1,42 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "checkout-frontend-58f6d7c9b4-hn7wz",
+    "namespace": "web",
+    "creationTimestamp": "2026-11-04T16:19:52Z",
+    "labels": {"app.kubernetes.io/name": "checkout-frontend", "app.kubernetes.io/part-of": "shop", "pod-template-hash": "58f6d7c9b4"},
+    "ownerReferences": [
+      {"apiVersion": "apps/v1", "kind": "ReplicaSet", "name": "checkout-frontend-58f6d7c9b4", "controller": true}
+    ]
+  },
+  "spec": {
+    "nodeName": "aks-web-31415926-vmss000002",
+    "containers": [
+      {
+        "name": "web",
+        "image": "acmeshop.azurecr.io/checkout-frontend:4.12.0",
+        "ports": [{"containerPort": 3000, "name": "http", "protocol": "TCP"}]
+      }
+    ]
+  },
+  "status": {
+    "phase": "Running",
+    "podIP": "10.244.2.17",
+    "conditions": [
+      {"type": "Ready", "status": "True", "lastTransitionTime": "2026-11-04T16:20:07Z"},
+      {"type": "ContainersReady", "status": "True", "lastTransitionTime": "2026-11-04T16:20:07Z"},
+      {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-11-04T16:19:52Z"}
+    ],
+    "containerStatuses": [
+      {
+        "name": "web",
+        "image": "acmeshop.azurecr.io/checkout-frontend:4.12.0",
+        "ready": true,
+        "started": true,
+        "restartCount": 0,
+        "state": {"running": {"startedAt": "2026-11-04T16:20:00Z"}}
+      }
+    ]
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "title": "checkout-frontend returns 502 for every request although pods are healthy",
+  "summary": "After the Node.js 22 migration the checkout frontend listens on port 3000. Pods are Running and Ready, probes pass, but the ingress returns 502 Bad Gateway for 100% of checkout traffic.",
+  "expected_failure": "ServicePortMismatch",
+  "agent_proposals": [
+    "kubectl get endpoints checkout-frontend -n web -o wide",
+    "kubectl port-forward svc/checkout-frontend 8080:80 -n web",
+    "kubectl replace --force -f service.yaml -n web"
+  ]
+}

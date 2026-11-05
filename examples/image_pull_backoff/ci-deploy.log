@@ -1,0 +1,17 @@
+[ci] job deploy-ingest-worker #4812 (runner gitlab-runner-7)
+[ci] $ docker push registry.acme.internal:5000/data/ingest-worker:2.8.0
+[ci] 2.8.0: digest: sha256:7e3f0c9b2a1d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f size: 2419
+[ci] $ kubectl config view --raw   # debug: which cluster are we on?
+apiVersion: v1
+kind: Config
+current-context: prod-data
+users:
+- name: ci-deployer
+  user:
+    client-key-data: a3ViZWd1YXJkIGRlbW8gY2xpZW50IGtleSBtYXRlcmlhbCAtIG5vdCBhIHJlYWwga2V5
+    token: eyJhbGciOiJSUzI1NiIsImtpZCI6IlhrMmYtZGVtbyJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJkYXRhIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6ImNpLWRlcGxveWVyIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OmRhdGE6Y2ktZGVwbG95ZXIifQ.1DkjY6dwOsq2SwCIYEtj-_zIn5saN78Hj8YRbgWzynZjza3Vu8d2hWWFN08xU03Xhtcyp3eB731mPA2SbTksDw
+[ci] $ kubectl apply -f k8s/ingest-worker/deployment.yaml
+deployment.apps/ingest-worker configured
+[ci] $ kubectl rollout status deployment/ingest-worker -n data --timeout=10m
+Waiting for deployment "ingest-worker" rollout to finish: 0 of 2 updated replicas are available...
+error: timed out waiting for the condition

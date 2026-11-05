@@ -1,0 +1,18 @@
+2026-11-04T14:02:10.874Z INFO     orders-api 2.7.0 starting (pid=1, python=3.12.7, uvicorn=0.32.0)
+2026-11-04T14:02:10.875Z DEBUG    effective configuration:
+2026-11-04T14:02:10.875Z DEBUG      DATABASE_URL=postgresql://orders_svc:Wint3r-2025!@orders-db.shop.svc.cluster.local:5432/orders
+2026-11-04T14:02:10.875Z DEBUG      AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+2026-11-04T14:02:10.875Z DEBUG      AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+2026-11-04T14:02:10.876Z DEBUG      S3_INVOICE_BUCKET=acme-shop-invoices
+2026-11-04T14:02:10.876Z DEBUG      LOG_LEVEL=debug
+2026-11-04T14:02:11.204Z INFO     connecting to primary datastore orders-db.shop.svc.cluster.local:5432 (pool min=2 max=10)
+2026-11-04T14:02:11.389Z ERROR    database connection failed
+Traceback (most recent call last):
+  File "/app/orders/db.py", line 42, in connect
+    pool = await asyncpg.create_pool(dsn=settings.database_url, min_size=2, max_size=10)
+  File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+    await self._initialize()
+  File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1049, in _connect_addr
+    return await __connect_addr(params, timeout, True, *args)
+asyncpg.exceptions.InvalidPasswordError: password authentication failed for user "orders_svc"
+2026-11-04T14:02:11.391Z CRITICAL startup aborted: primary datastore unavailable - exiting with status 1

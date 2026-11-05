@@ -1,0 +1,56 @@
+{
+  "apiVersion": "v1",
+  "kind": "EventList",
+  "items": [
+    {
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned payments/payments-api-7d9f8b6c5d-x2k4q to ip-10-0-3-17.eu-west-1.compute.internal",
+      "involvedObject": {"kind": "Pod", "namespace": "payments", "name": "payments-api-7d9f8b6c5d-x2k4q"},
+      "source": {"component": "default-scheduler"},
+      "count": 1,
+      "firstTimestamp": "2026-11-04T09:12:03Z",
+      "lastTimestamp": "2026-11-04T09:12:03Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"ghcr.io/acme/payments-api:3.4.1\" already present on machine",
+      "involvedObject": {"kind": "Pod", "namespace": "payments", "name": "payments-api-7d9f8b6c5d-x2k4q", "fieldPath": "spec.containers{api}"},
+      "source": {"component": "kubelet", "host": "ip-10-0-3-17.eu-west-1.compute.internal"},
+      "count": 7,
+      "firstTimestamp": "2026-11-04T09:12:05Z",
+      "lastTimestamp": "2026-11-04T09:31:09Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container api",
+      "involvedObject": {"kind": "Pod", "namespace": "payments", "name": "payments-api-7d9f8b6c5d-x2k4q", "fieldPath": "spec.containers{api}"},
+      "source": {"component": "kubelet", "host": "ip-10-0-3-17.eu-west-1.compute.internal"},
+      "count": 7,
+      "firstTimestamp": "2026-11-04T09:12:06Z",
+      "lastTimestamp": "2026-11-04T09:31:10Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "OOMKilling",
+      "message": "Memory cgroup out of memory: Killed process 4127 (java) total-vm:3914212kB, anon-rss:521436kB, file-rss:18220kB, shmem-rss:0kB, UID:10001 pgtables:1444kB oom_score_adj:983",
+      "involvedObject": {"kind": "Node", "name": "ip-10-0-3-17.eu-west-1.compute.internal"},
+      "source": {"component": "kernel-monitor", "host": "ip-10-0-3-17.eu-west-1.compute.internal"},
+      "count": 6,
+      "firstTimestamp": "2026-11-04T09:15:41Z",
+      "lastTimestamp": "2026-11-04T09:33:52Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container api in pod payments-api-7d9f8b6c5d-x2k4q_payments(6f1c2a9e-2b7d-4c1e-9a43-0d8e5b7f21c4)",
+      "involvedObject": {"kind": "Pod", "namespace": "payments", "name": "payments-api-7d9f8b6c5d-x2k4q", "fieldPath": "spec.containers{api}"},
+      "source": {"component": "kubelet", "host": "ip-10-0-3-17.eu-west-1.compute.internal"},
+      "count": 14,
+      "firstTimestamp": "2026-11-04T09:16:02Z",
+      "lastTimestamp": "2026-11-04T09:34:20Z"
+    }
+  ]
+}

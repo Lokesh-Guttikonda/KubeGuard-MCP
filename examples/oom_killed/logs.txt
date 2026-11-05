@@ -1,0 +1,13 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx768m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError
+2026-11-04T09:31:13.877Z  INFO 1 --- [           main] c.a.payments.PaymentsApplication         : Starting PaymentsApplication v3.4.1 using Java 21.0.5 with PID 1 (/app/app.jar started by app in /app)
+2026-11-04T09:31:13.881Z  INFO 1 --- [           main] c.a.payments.PaymentsApplication         : The following 1 profile is active: "prod"
+2026-11-04T09:31:18.412Z  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-11-04T09:31:18.440Z  INFO 1 --- [           main] c.a.payments.PaymentsApplication         : Started PaymentsApplication in 4.8 seconds (process running for 5.3)
+2026-11-04T09:32:02.117Z DEBUG 1 --- [nio-8080-exec-3] c.a.p.web.RequestLoggingFilter           : POST /v1/charges headers={Authorization=Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImRlbW8ifQ.eyJzdWIiOiJ1c2VyLTQ4MjEzIiwiaXNzIjoiaHR0cHM6Ly9hdXRoLmFjbWUuZXhhbXBsZSIsInNjb3BlIjoicGF5bWVudHM6d3JpdGUiLCJleHAiOjE3OTM4NzUyMDB9.p-z1Carp4No-nt3AZVpoDqyvJqLIFNKWoljv_jci_l0, X-Request-Id=8f14e45f}
+2026-11-04T09:32:02.140Z  INFO 1 --- [nio-8080-exec-3] c.a.p.service.ChargeService              : charge accepted customer=maria.garcia@example.com amount=129.00 EUR
+2026-11-04T09:32:40.551Z  INFO 1 --- [   scheduling-1] c.a.p.batch.SettlementJob                : loading 1250000 pending settlements into memory (batch 1/20)
+[2026-11-04T09:32:41.002+0000][info][gc] GC(41) Pause Young (Normal) (G1 Evacuation Pause) 402M->398M(512M) 31.882ms
+[2026-11-04T09:33:05.719+0000][info][gc] GC(42) Pause Young (Concurrent Start) (G1 Humongous Allocation) 471M->466M(560M) 44.107ms
+[2026-11-04T09:33:27.380+0000][info][gc] GC(43) Pause Young (Normal) (G1 Evacuation Pause) 548M->541M(640M) 52.920ms
+2026-11-04T09:33:49.870Z  WARN 1 --- [   scheduling-1] c.a.p.batch.SettlementJob                : settlement batch 7/20 slow (11.2s), heap committed 704M
+[2026-11-04T09:33:51.904+0000][info][gc] GC(44) Pause Young (Normal) (G1 Evacuation Pause) 603M->598M(704M) 61.335ms

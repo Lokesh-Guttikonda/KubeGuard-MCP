@@ -1,0 +1,10 @@
+> checkout-frontend@4.12.0 start
+> node --enable-source-maps dist/server.js
+
+[2026-11-04T16:20:00.912Z] info: loading config from /app/config/production.json
+[2026-11-04T16:20:00.915Z] debug: SESSION_SECRET=4f9c2b7e1d8a6f3c5b0e9d7a2c4f6b8e
+[2026-11-04T16:20:01.388Z] info: checkout-frontend v4.12.0 (node v22.11.0) listening on http://0.0.0.0:3000
+[2026-11-04T16:20:06.902Z] info: GET /healthz 200 1.2ms ua="kube-probe/1.31"
+[2026-11-04T16:20:16.904Z] info: GET /healthz 200 0.9ms ua="kube-probe/1.31"
+[2026-11-04T16:21:42.551Z] warn: no application traffic received in 90s (expected ~40 rps from ingress-nginx)
+[2026-11-04T16:22:03.004Z] info: password reset e-mail queued for lena.schmidt@example.de

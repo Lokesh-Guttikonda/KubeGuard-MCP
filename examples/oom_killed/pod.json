@@ -1,0 +1,79 @@
+{
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "name": "payments-api-7d9f8b6c5d-x2k4q",
+    "namespace": "payments",
+    "uid": "6f1c2a9e-2b7d-4c1e-9a43-0d8e5b7f21c4",
+    "creationTimestamp": "2026-11-04T09:12:03Z",
+    "labels": {
+      "app": "payments-api",
+      "pod-template-hash": "7d9f8b6c5d"
+    },
+    "ownerReferences": [
+      {
+        "apiVersion": "apps/v1",
+        "kind": "ReplicaSet",
+        "name": "payments-api-7d9f8b6c5d",
+        "uid": "0b6f6a3e-58de-4f0b-8a3a-3f1f8f7f1f11",
+        "controller": true,
+        "blockOwnerDeletion": true
+      }
+    ]
+  },
+  "spec": {
+    "nodeName": "ip-10-0-3-17.eu-west-1.compute.internal",
+    "serviceAccountName": "payments-api",
+    "containers": [
+      {
+        "name": "api",
+        "image": "ghcr.io/acme/payments-api:3.4.1",
+        "ports": [{"containerPort": 8080, "name": "http", "protocol": "TCP"}],
+        "env": [{"name": "SPRING_PROFILES_ACTIVE", "value": "prod"}],
+        "resources": {
+          "limits": {"cpu": "1", "memory": "512Mi"},
+          "requests": {"cpu": "250m", "memory": "256Mi"}
+        }
+      }
+    ]
+  },
+  "status": {
+    "phase": "Running",
+    "qosClass": "Burstable",
+    "hostIP": "10.0.3.17",
+    "podIP": "10.0.3.142",
+    "startTime": "2026-11-04T09:12:03Z",
+    "conditions": [
+      {"type": "Initialized", "status": "True", "lastTransitionTime": "2026-11-04T09:12:03Z"},
+      {"type": "Ready", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [api]", "lastTransitionTime": "2026-11-04T09:33:52Z"},
+      {"type": "ContainersReady", "status": "False", "reason": "ContainersNotReady", "message": "containers with unready status: [api]", "lastTransitionTime": "2026-11-04T09:33:52Z"},
+      {"type": "PodScheduled", "status": "True", "lastTransitionTime": "2026-11-04T09:12:03Z"}
+    ],
+    "containerStatuses": [
+      {
+        "name": "api",
+        "image": "ghcr.io/acme/payments-api:3.4.1",
+        "imageID": "ghcr.io/acme/payments-api@sha256:4b1d9c0e7a2f3e5d6c8b9a0f1e2d3c4b5a69788776655443322110ffeeddccbb",
+        "containerID": "containerd://9c1e5d8a7b6f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d",
+        "ready": false,
+        "started": false,
+        "restartCount": 6,
+        "state": {
+          "waiting": {
+            "reason": "CrashLoopBackOff",
+            "message": "back-off 2m40s restarting failed container=api pod=payments-api-7d9f8b6c5d-x2k4q_payments(6f1c2a9e-2b7d-4c1e-9a43-0d8e5b7f21c4)"
+          }
+        },
+        "lastState": {
+          "terminated": {
+            "reason": "OOMKilled",
+            "exitCode": 137,
+            "startedAt": "2026-11-04T09:31:10Z",
+            "finishedAt": "2026-11-04T09:33:52Z",
+            "containerID": "containerd://9c1e5d8a7b6f4e3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a7f6e5d4c3b2a1f0e9d"
+          }
+        }
+      }
+    ]
+  }
+}

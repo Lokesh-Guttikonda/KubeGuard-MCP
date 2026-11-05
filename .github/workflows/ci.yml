@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  lint:
+    name: Lint, format & docs freshness
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Install ruff
+        run: python -m pip install "ruff==0.16.9"
+      - name: ruff check
+        run: ruff check --output-format=github .
+      - name: ruff format --check
+        run: ruff format --check .
+      - name: README embeds the current real demo output
+        run: python scripts/update_readme.py --check
+
+  test:
+    name: Tests (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+        include:
+          - { os: windows-latest, python: "3.9" }
+          - { os: windows-latest, python: "3.12" }
+          - { os: windows-latest, python: "3.14" }
+          - { os: macos-latest, python: "3.11" }
+          - { os: macos-latest, python: "3.14" }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          allow-prereleases: true
+      - name: Install test tools (the package itself has no dependencies)
+        run: python -m pip install pytest pytest-cov
+      - name: Run test-suite
+        run: python -m pytest -q --cov=src --cov-report=term-missing:skip-covered --cov-report=xml
+      - name: Upload coverage report
+        if: matrix.os == 'ubuntu-latest' && matrix.python == '3.13'
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-xml
+          path: coverage.xml
+          if-no-files-found: ignore
+
+  zero-deps-demo:
+    name: Offline demo, zero packages (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Demo in isolated mode (-I) with PYTHONUTF8=1 - no pip install, no API keys
+        env:
+          PYTHONUTF8: "1"
+        run: python -I scripts/demo_offline.py --report incident-report.md
+      - name: Demo on a legacy cp1252 code page must degrade to ASCII, never crash
+        env:
+          PYTHONUTF8: "0"
+          PYTHONIOENCODING: cp1252
+        run: python scripts/demo_offline.py --no-report
+      - name: Zero-install CLI launcher
+        run: python scripts/kubeguard.py diagnose examples/crashloop_secret_leak --format json
+      - name: Upload the generated SRE incident report
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v5
+        with:
+          name: sre-incident-report
+          path: incident-report.md
+
+  package:
+    name: Build wheel & smoke-test the installed CLI and MCP server
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Build sdist + wheel
+        run: |
+          python -m pip install build
+          python -m build
+      - name: Install the wheel into a clean virtualenv
+        run: |
+          python -m venv /tmp/kg
+          /tmp/kg/bin/pip install dist/*.whl
+          test "$(/tmp/kg/bin/pip list --format=freeze | grep -vc '^kubeguard-mcp=\|^pip=')" = "0"
+      - name: Smoke-test from outside the source tree
+        working-directory: /tmp
+        run: |
+          /tmp/kg/bin/kubeguard --version
+          /tmp/kg/bin/kubeguard demo --no-report --no-color
+          /tmp/kg/bin/kubeguard check kubectl get pods -n prod
+          set +e; /tmp/kg/bin/kubeguard check kubectl delete namespace prod; code=$?; set -e
+          test "$code" -eq 4
+          printf '%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18"}}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+            | /tmp/kg/bin/kubeguard-mcp | tee mcp.out
+          grep -q '"diagnose_pod"' mcp.out
+      - uses: actions/upload-artifact@v5
+        with:
+          name: dist
+          path: dist/

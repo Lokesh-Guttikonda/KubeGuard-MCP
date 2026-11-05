@@ -1,0 +1,42 @@
+{
+  "apiVersion": "v1",
+  "kind": "EventList",
+  "items": [
+    {
+      "type": "Normal",
+      "reason": "Scheduled",
+      "message": "Successfully assigned shop/orders-api-6c8d9b7f45-tq9zp to gke-shop-pool-1-8b2f9c1d-q7xw",
+      "involvedObject": {"kind": "Pod", "namespace": "shop", "name": "orders-api-6c8d9b7f45-tq9zp"},
+      "count": 1,
+      "firstTimestamp": "2026-11-04T13:51:40Z",
+      "lastTimestamp": "2026-11-04T13:51:40Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Pulled",
+      "message": "Container image \"registry.acme.io/shop/orders-api:2.7.0\" already present on machine",
+      "involvedObject": {"kind": "Pod", "namespace": "shop", "name": "orders-api-6c8d9b7f45-tq9zp", "fieldPath": "spec.containers{orders}"},
+      "count": 10,
+      "firstTimestamp": "2026-11-04T13:51:41Z",
+      "lastTimestamp": "2026-11-04T14:02:10Z"
+    },
+    {
+      "type": "Normal",
+      "reason": "Started",
+      "message": "Started container orders",
+      "involvedObject": {"kind": "Pod", "namespace": "shop", "name": "orders-api-6c8d9b7f45-tq9zp", "fieldPath": "spec.containers{orders}"},
+      "count": 10,
+      "firstTimestamp": "2026-11-04T13:51:41Z",
+      "lastTimestamp": "2026-11-04T14:02:10Z"
+    },
+    {
+      "type": "Warning",
+      "reason": "BackOff",
+      "message": "Back-off restarting failed container orders in pod orders-api-6c8d9b7f45-tq9zp_shop(2c7e9f1a-4d3b-4b8e-9f6a-1e2d3c4b5a69)",
+      "involvedObject": {"kind": "Pod", "namespace": "shop", "name": "orders-api-6c8d9b7f45-tq9zp", "fieldPath": "spec.containers{orders}"},
+      "count": 41,
+      "firstTimestamp": "2026-11-04T13:51:47Z",
+      "lastTimestamp": "2026-11-04T14:04:58Z"
+    }
+  ]
+}

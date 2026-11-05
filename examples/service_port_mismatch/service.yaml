@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: checkout-frontend
+  namespace: web
+  labels:
+    app.kubernetes.io/name: checkout-frontend
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: checkout-frontend
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080 # legacy Express server port (pre Node 22 migration)
+      protocol: TCP

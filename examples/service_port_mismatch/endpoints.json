@@ -1,0 +1,15 @@
+{
+  "apiVersion": "v1",
+  "kind": "Endpoints",
+  "metadata": {"name": "checkout-frontend", "namespace": "web"},
+  "subsets": [
+    {
+      "addresses": [
+        {"ip": "10.244.0.31", "targetRef": {"kind": "Pod", "name": "checkout-frontend-58f6d7c9b4-7tq2d"}},
+        {"ip": "10.244.1.22", "targetRef": {"kind": "Pod", "name": "checkout-frontend-58f6d7c9b4-k9d4m"}},
+        {"ip": "10.244.2.17", "targetRef": {"kind": "Pod", "name": "checkout-frontend-58f6d7c9b4-hn7wz"}}
+      ],
+      "ports": [{"name": "http", "port": 8080, "protocol": "TCP"}]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "title": "payments-api restarts every few minutes under settlement load",
+  "summary": "A Spring Boot service was upgraded to v3.4.1 (new in-memory settlement batch). Pods restart with exit code 137 roughly every 3 minutes and the on-call sees CrashLoopBackOff.",
+  "expected_failure": "OOMKilled",
+  "agent_proposals": [
+    "kubectl top pod payments-api-7d9f8b6c5d-x2k4q -n payments --containers",
+    "kubectl set resources deployment/payments-api -n payments -c api --limits=memory=1Gi",
+    "kubectl delete pods --all -n payments"
+  ]
+}
