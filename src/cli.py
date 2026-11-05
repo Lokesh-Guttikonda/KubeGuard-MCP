@@ -472,7 +472,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         return 130
     except BrokenPipeError:  # pragma: no cover - e.g. `kubeguard demo | head`
         try:
-            sys.stdout = open(os.devnull, "w")
+            sys.stdout = open(os.devnull, "w", encoding="utf-8")
         except OSError:
             pass
         return EXIT_OK
